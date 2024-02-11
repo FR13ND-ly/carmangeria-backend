@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comandă plasată</title>
+    </head>
+    <body
+        style="
+            font-family: sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        ">
+        <main style="padding: 20px; text-align: center">
+            <h1 style="color: #dd923c; font-size: 24px; margin-bottom: 10px">
+                Comanda nouă!
+            </h1>
+            <p><b>Nume:</b> {{ order.name }}</p>
+            <p><b>Telefon:</b> {{ order.phone }}</p>
+            <p><b>Email:</b> {{ order.email }}</p>
+            <p><b>Data livrării:</b> {{ order.deliveryDate }}</p>
+            <p><b>Mesaj:</b> {{ order.message }}</p>
+            <table
+                style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                ">
+                <thead>
+                    <tr>
+                        <th
+                            style="
+                                text-align: left;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Denumire produs
+                        </th>
+                        <th
+                            style="
+                                text-align: left;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Cantitate
+                        </th>
+                        <th
+                            style="
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Preț/unitate
+                        </th>
+                        <th
+                            style="
+                                text-align: right;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Preț total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.title }}
+                        </td>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.amount }}
+                        </td>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.price }} LEI
+                        </td>
+                        <td
+                            style="
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                text-align: right;
+                            ">
+                            {{ item.totalPrice }} LEI
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td
+                            colspan="3"
+                            style="padding: 5px; border: 1px solid #ddd">
+                            Total:
+                        </td>
+                        <td
+                            style="
+                                text-align: right;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            {{ total }} LEI
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </main>
+    </body>
+</html>

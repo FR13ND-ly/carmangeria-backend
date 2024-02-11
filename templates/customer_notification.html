@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Comandă plasată</title>
+    </head>
+    <body
+        style="
+            font-family: sans-serif;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        ">
+        <main style="padding: 20px; text-align: center">
+            <h1 style="color: #dd923c; font-size: 24px; margin-bottom: 10px">
+                Comanda ta a fost plasată!
+            </h1>
+            <p style="font-size: 18px">Salut, {{ order.name }}!</p>
+            <table
+                style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                ">
+                <thead>
+                    <tr>
+                        <th
+                            style="
+                                text-align: left;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Denumire produs
+                        </th>
+                        <th
+                            style="
+                                text-align: left;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Cantitate
+                        </th>
+                        <th
+                            style="
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Preț/unitate
+                        </th>
+                        <th
+                            style="
+                                text-align: right;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            Preț total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.title }}
+                        </td>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.amount }}
+                        </td>
+                        <td style="padding: 5px; border: 1px solid #ddd">
+                            {{ item.price }} LEI
+                        </td>
+                        <td
+                            style="
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                text-align: right;
+                            ">
+                            {{ item.totalPrice }} LEI
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td
+                            colspan="3"
+                            style="padding: 5px; border: 1px solid #ddd">
+                            Total:
+                        </td>
+                        <td
+                            style="
+                                text-align: right;
+                                padding: 5px;
+                                border: 1px solid #ddd;
+                                font-weight: bold;
+                            ">
+                            {{ total }} LEI
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <p style="font-size: 14px; margin-top: 15px">
+                Echipa noastră procesează comanda ta cât mai rapid. Vei fi
+                contactat separat cu detalii privind livrarea.
+            </p>
+        </main>
+        <footer
+            style="
+                background-color: #eee;
+                text-align: center;
+                padding: 10px;
+                border-top: 1px solid #ddd;
+            ">
+            <p style="font-size: 12px">Vă mulțumim pentru vizită!</p>
+        </footer>
+    </body>
+</html>
