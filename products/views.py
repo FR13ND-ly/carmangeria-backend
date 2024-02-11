@@ -7,7 +7,7 @@ import os
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-apiUrl = "https://stingray-app-7bc69.ondigitalocean.app/"
+apiUrl = "https://stingray-app-7bc69.ondigitalocean.app"
 
 def getAllProducts(request):
     res = []
