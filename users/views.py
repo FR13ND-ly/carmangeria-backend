@@ -22,16 +22,22 @@ def authentificate(request):
         )        
         token.save()
         res = {
-            "success": True,
+            "logged": True,
+            "isAdmin": user.isAdmin,
             "token": token.token
         }
         
+    print(res)
     return JsonResponse(res, safe=False)
 
 def authorization(request, token):
+    user = Token.objects.filter(token=token)
     res = {
-        "success": Token.objects.filter(token=token).exists()
+        "isAdmin": False,
+        "logged": user.exists()
     }
+    if (res["logged"]):
+        res["isAdmin"] = User.objects.get(id = Token.objects.filter(token=token)[0].userId).isAdmin
     return JsonResponse(res, safe=False)
 
 @csrf_exempt

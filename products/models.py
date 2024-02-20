@@ -27,6 +27,7 @@ class OrderProduct(models.Model):
     orderId = models.PositiveIntegerField(null=True)
     productId = models.PositiveIntegerField(null=True)
     amount = models.PositiveIntegerField(null=True)
+    price = models.PositiveIntegerField(null=True)
 
 
 class File(models.Model):
@@ -37,3 +38,7 @@ class File(models.Model):
     
 class Email(models.Model):
     email = models.EmailField()
+
+
+class News(models.Model):
+    text = models.TextField()

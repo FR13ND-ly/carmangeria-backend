@@ -1,14 +1,15 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
-from .models import Product, Order, File, OrderProduct, Email
+from .models import Product, Order, File, OrderProduct, Email, News
 from rest_framework import status
 import os 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.conf import settings
 
-apiUrl = "https://stingray-app-7bc69.ondigitalocean.app"
 
+@csrf_exempt
 def getAllProducts(request):
     res = []
     for product in Product.objects.all():
@@ -75,11 +76,12 @@ def deleteProduct(request, id):
 
 def getAllOrders(request):
     res = []
-    for order in Order.objects.filter(completed = False):
+    for order in Order.objects.all():
         item = {
             "id": order.id,
             "name": order.name,
             "phone": order.phone,
+            "completed": order.completed,
             "email": order.email,
             "message": order.message,
             "deliveryDate": order.deliveryDate,
@@ -92,7 +94,7 @@ def getAllOrders(request):
                 "title": product.title,
                 "description": product.description,
                 "type": product.type,
-                "price": product.price,
+                "price": orderP.price,
                 "date": product.date,
                 "imageUrl": getFile(product.imageId),
                 "amount": orderP.amount,
@@ -126,14 +128,15 @@ def addOrder(request):
     order.save()
     orderItems = []
     for data in data["products"]:
+        product = Product.objects.get(id = data["productId"])
         orderItem = OrderProduct.objects.create(
             orderId = order.id,
-            productId = data["productId"],
-            amount = data["amount"]
+            productId = product.id,
+            amount = data["amount"],
+            price = product.price
         )
         orderItem.save()
         orderItems.append(orderItem)
-        product = Product.objects.get(id = data["productId"])
         email["items"].append({
             "id": product.id,
             "title": product.title,
@@ -170,7 +173,7 @@ def addFile(request):
 
 def getFile(id, path=""):
     if File.objects.filter(id=id).exists():
-        return apiUrl + "/media/" + path + os.path.basename(File.objects.get(id=id).file.name)
+        return settings.API_URL + "/media/" + path + os.path.basename(File.objects.get(id=id).file.name)
     else:
         return ""
     
@@ -179,7 +182,8 @@ def getDashboard(request):
     res = {
         "productsCount": Product.objects.all().count(),
         "ordersCount": Order.objects.filter(completed = False).count(),
-        "email": Email.objects.all()[0].email
+        "email": Email.objects.all()[0].email,
+        "news": News.objects.all()[0].text
     }
     return JsonResponse(res, status=status.HTTP_200_OK, safe=False)
     
@@ -208,6 +212,18 @@ def sendEmail(email):
         recipient_list=[Email.objects.all()[0].email]
     )
 
+
+def getNews(request):
+    res = News.objects.all()[0].text
+    return JsonResponse(res, status=status.HTTP_200_OK, safe=False)
+
+
+def setNews(request, text):
+    news = News.objects.all()[0]
+    news.text = text
+    news.save()
+    return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
+
 def statistics(request):
     productsStats = {}
     usersStats = {}
@@ -227,11 +243,11 @@ def statistics(request):
             }
         for orderProduct in OrderProduct.objects.filter(orderId = order.id):
             product = Product.objects.get(id = orderProduct.productId)
-            price = product.price * orderProduct.amount
+            price = orderProduct.price * orderProduct.amount
             productsStats[product.id]["productsNumber"] += orderProduct.amount
             productsStats[product.id]["productsPrice"] += price
             usersStats[order.phone]["productsNumber"] += orderProduct.amount
-            usersStats[order.phone]["productsPrice"] += price            
+            usersStats[order.phone]["productsPrice"] += price         
     res = {
         "productsStats": productsStats,
         "usersStats": usersStats,

@@ -13,9 +13,13 @@ urlpatterns = [
     path("orders/complete/<int:id>/", views.completeOrder),
     path("orders/delete/<int:id>/", views.deleteOrder),
     
-    path("files/add/", views.addFile),
+    path("news/get/", views.getNews),
+    path("news/set/<str:text>/", views.setNews),
 
     path("dashboard/", views.getDashboard),
     path("email/set/<str:newEmail>/", views.setEmail),
-    path("statistics/", views.statistics)
+    path("statistics/", views.statistics),
+
+    path("files/add/", views.addFile),
+
 ]
