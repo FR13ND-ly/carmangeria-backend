@@ -76,7 +76,7 @@ def deleteProduct(request, id):
 
 def getAllOrders(request):
     res = []
-    for order in Order.objects.all():
+    for order in Order.objects.all().order_by("deliveryDate"):
         item = {
             "id": order.id,
             "name": order.name,
@@ -85,6 +85,7 @@ def getAllOrders(request):
             "email": order.email,
             "message": order.message,
             "deliveryDate": order.deliveryDate,
+            "date": order.date,
             "products": []
         }
         for orderP in OrderProduct.objects.filter(orderId = order.id):
@@ -145,7 +146,8 @@ def addOrder(request):
             "amount": data["amount"]
         })
         email["total"] += data["amount"] * product.price
-    sendEmail(email)
+    if info['email']:
+        sendEmail(email)
     return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
     
 
@@ -201,14 +203,14 @@ def sendEmail(email):
         subject = subject, 
         message="",
         html_message=customerMessage, 
-        from_email='Carmangeria lui Geo <sender@email.com>', 
+        from_email='Carmangeria lui Geo <comenzi@carmangerialuigeo.ro>', 
         recipient_list=[email["order"]["email"]]
     )
     send_mail(
         subject = subject, 
         message="",
         html_message=orderMessage, 
-        from_email='Carmangeria lui Geo <sender@email.com>', 
+        from_email='Carmangeria lui Geo <comenzi@carmangerialuigeo.ro>', 
         recipient_list=[Email.objects.all()[0].email]
     )
 
@@ -230,24 +232,29 @@ def statistics(request):
     for product in Product.objects.all():
         productsStats[product.id] = {
             "title": product.title,
-            "productsNumber": 0,
-            "productsPrice": 0,
+            "stats": []
         }
     for order in Order.objects.filter(completed = True):
         if usersStats.get(order.phone) == None:
             usersStats[order.phone] = {
                 "name": order.name,
                 "email": order.email,
-                "productsNumber": 0,
-                "productsPrice": 0,
+                "stats": []
             }
         for orderProduct in OrderProduct.objects.filter(orderId = order.id):
             product = Product.objects.get(id = orderProduct.productId)
-            price = orderProduct.price * orderProduct.amount
-            productsStats[product.id]["productsNumber"] += orderProduct.amount
-            productsStats[product.id]["productsPrice"] += price
-            usersStats[order.phone]["productsNumber"] += orderProduct.amount
-            usersStats[order.phone]["productsPrice"] += price         
+
+            productsStats[product.id]["stats"].append({
+                "amount": orderProduct.amount,
+                "price": orderProduct.price,
+                "date": order.date
+            })
+            usersStats[order.phone]["stats"].append({
+                "amount": orderProduct.amount,
+                "price": orderProduct.price * orderProduct.amount,
+                "date": order.date
+            })
+
     res = {
         "productsStats": productsStats,
         "usersStats": usersStats,
