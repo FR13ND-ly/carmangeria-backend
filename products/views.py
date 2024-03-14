@@ -113,7 +113,7 @@ def addOrder(request):
             "name": info["name"],
             "phone": info["phone"],
             "email": info["email"],
-            "message": info["message"],
+            "message": info.get("message", ""),
             "deliveryDate": info["deliveryDate"],
         },
         "items": [],
@@ -123,7 +123,7 @@ def addOrder(request):
         name = info["name"],
         phone = info["phone"],
         email = info["email"],
-        message = info["message"],
+        message = info.get("message", ""),
         deliveryDate = info["deliveryDate"],
     )
     order.save()
@@ -203,14 +203,14 @@ def sendEmail(email):
         subject = subject, 
         message="",
         html_message=customerMessage, 
-        from_email='Carmangeria lui Geo <comenzi@carmangerialuigeo.ro>', 
+        from_email='contact@carmangerialuigeo.ro', 
         recipient_list=[email["order"]["email"]]
     )
     send_mail(
         subject = subject, 
         message="",
         html_message=orderMessage, 
-        from_email='Carmangeria lui Geo <comenzi@carmangerialuigeo.ro>', 
+        from_email='contact@carmangerialuigeo.ro', 
         recipient_list=[Email.objects.all()[0].email]
     )
 
