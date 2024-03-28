@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -47,11 +48,11 @@ def getProductsById(request):
 def addProduct(request):
     data = JSONParser().parse(request)
     Product.objects.create(
-        title = data["title"],
-        description = data["description"],
-        type = data["type"],
-        imageId = data["imageId"],
-        price = data["price"],
+        title = data.get("title", ""),
+        description = data.get("description", ""),
+        type = data.get("type", ""),
+        imageId = data.get("imageId", 0),
+        price = data.get("price", 0),
     ).save()
     return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
     
@@ -60,11 +61,11 @@ def addProduct(request):
 def updateProduct(request):
     data = JSONParser().parse(request)
     product = Product.objects.get(id = data["id"])
-    product.title = data["title"]
-    product.description = data["description"]
-    product.type = data["type"]
-    product.imageId = data["imageId"]
-    product.price = data["price"]
+    product.title = data.get("title", product.title)
+    product.description = data.get("description", product.description)
+    product.type = data.get("type", product.type)
+    product.imageId = data.get("imageId", product.imageId)
+    product.price = data.get("price", product.price)
     product.save()
     return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
     
@@ -110,19 +111,19 @@ def addOrder(request):
     info = data["data"]
     email = {
         "order": {
-            "name": info["name"],
-            "phone": info["phone"],
-            "email": info["email"],
+            "name": info.get("name", ""),
+            "phone": info.get("phone", ""),
+            "email": info.get("email", ""),
             "message": info.get("message", ""),
-            "deliveryDate": info["deliveryDate"],
+            "deliveryDate": info.get("deliveryDate"),
         },
         "items": [],
         "total": 0
     }
     order = Order.objects.create(
-        name = info["name"],
-        phone = info["phone"],
-        email = info["email"],
+        name = info.get("name", ""),
+        phone = info.get("phone", ""),
+        email = info.get("email", ""),
         message = info.get("message", ""),
         deliveryDate = info["deliveryDate"],
     )
@@ -196,6 +197,7 @@ def setEmail(request, newEmail):
     return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
 
 def sendEmail(email):
+    if email == "": return
     subject = 'Comandă nouă'
     customerMessage = render_to_string('customer_notification.html', email)
     orderMessage = render_to_string('order_notification.html', email)
@@ -260,3 +262,15 @@ def statistics(request):
         "usersStats": usersStats,
     }
     return JsonResponse(res, status=status.HTTP_200_OK, safe=False)
+
+
+def getDB(request):
+    db_path = settings.DATABASES['default']['NAME']
+    if os.path.exists(db_path):
+        with open(db_path, 'rb') as db_file:
+            response = HttpResponse(db_file.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(db_path)
+            response['Content-Length'] = os.path.getsize(db_path)
+            return response
+    else:
+        return HttpResponse("Database file not found", status=404)

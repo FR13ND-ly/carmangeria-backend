@@ -26,8 +26,6 @@ def authentificate(request):
             "isAdmin": user.isAdmin,
             "token": token.token
         }
-        
-    print(res)
     return JsonResponse(res, safe=False)
 
 def authorization(request, token):

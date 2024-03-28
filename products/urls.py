@@ -21,5 +21,6 @@ urlpatterns = [
     path("statistics/", views.statistics),
 
     path("files/add/", views.addFile),
+    path("files/getdb/", views.getDB),
 
 ]

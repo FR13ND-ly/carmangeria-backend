@@ -16,7 +16,7 @@ class Product(models.Model):
 class Order(models.Model):
     name = models.TextField()
     phone = models.TextField()
-    email = models.EmailField(default = "")
+    email = models.TextField(default = "")
     message = models.TextField(default = "")
     deliveryDate = models.DateField(default=timezone.now)
     completed = models.BooleanField(default = False)
